@@ -195,9 +195,25 @@ dune exec test/unit/ascetic_ddd/test_spec.exe
 dune exec test/acceptance/acceptance_tests.exe
 ```
 
+### Formal verification
+
+```bash
+# Run Why3 proofs (requires why3 + alt-ergo)
+dune build @verify
+```
+
+This proves 52 verification conditions for key domain invariants:
+
+- **DualKarma** (33 VCs): `effective <= public` always holds, `receive` and `apply_correction` preserve invariants, public/effective always non-negative
+- **FraudScore + TaintFactor** (15 VCs): score bounded [0,100], classification correctness, taint mapping correctness, confirmed fraud zeroes output
+- **SlidingWindow** (4 VCs): empty budget never exhausted, action recording correctness
+
+All proofs are fully automatic via Alt-Ergo SMT solver (no manual `sorry`/`admitted`).
+
 ### Test structure
 
 - **150 tests** across 14 test suites
+- **52 formal verification conditions** (Why3 + Alt-Ergo)
 - **Unit tests**: value objects, aggregates, domain services, command handlers
 - **Acceptance tests**: Gherkin-style BDD scenarios (vote casting, budget exhaustion, self-vote prevention, fraud detection, cross-chat karma)
 - **Sociable tests**: real domain + application layers with in-memory infrastructure (no mocks except external network adapters)

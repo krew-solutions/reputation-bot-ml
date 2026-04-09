@@ -1,0 +1,78 @@
+(** Formal verification of DualKarma invariants.
+
+    Proves:
+    1. effective <= public always holds (type invariant)
+    2. receive preserves the invariant
+    3. apply_correction preserves the invariant
+    4. public karma is non-negative after receive
+    5. apply_correction never changes public karma
+*)
+
+module DualKarma
+
+  use int.Int
+  use int.ComputerDivision
+  use option.Option
+
+  type karma = int
+
+  let function clamp_non_neg (x: karma) : karma
+    ensures { result >= 0 }
+    ensures { x >= 0 -> result = x }
+    ensures { x < 0 -> result = 0 }
+  = if x < 0 then 0 else x
+
+  (** DualKarma with type invariant: effective <= public *)
+  type dual_karma = {
+    public : karma;
+    effective : karma;
+  }
+  invariant { effective <= public }
+  invariant { effective >= 0 }
+  invariant { public >= 0 }
+  by { public = 0; effective = 0 }
+
+  let create (pub: karma) (eff: karma) : option dual_karma
+    requires { pub >= 0 }
+    requires { eff >= 0 }
+    ensures { match result with
+      | None -> eff > pub
+      | Some dk -> dk.public = pub /\ dk.effective = eff
+    end }
+  = if eff <= pub then Some { public = pub; effective = eff }
+    else None
+
+  let initial () : dual_karma
+    ensures { result.public = 0 }
+    ensures { result.effective = 0 }
+  = { public = 0; effective = 0 }
+
+  (** Receive: adds delta to public, delta*taint/10000 to effective.
+      Both clamped non-negative. Effective capped at public. *)
+  let receive (dk: dual_karma) (delta: karma) (taint_factor: int) : dual_karma
+    requires { 0 <= taint_factor <= 10000 }
+    ensures { result.effective <= result.public }
+    ensures { result.public >= 0 }
+    ensures { result.effective >= 0 }
+  = let new_public = clamp_non_neg (dk.public + delta) in
+    let effective_delta = div (delta * taint_factor) 10000 in
+    let raw_effective = clamp_non_neg (dk.effective + effective_delta) in
+    let new_effective = if raw_effective > new_public then new_public
+                        else raw_effective in
+    { public = new_public; effective = new_effective }
+
+  (** Correction: only touches effective, public unchanged. *)
+  let apply_correction (dk: dual_karma) (effective_delta: karma) : dual_karma
+    ensures { result.public = dk.public }
+    ensures { result.effective <= result.public }
+    ensures { result.effective >= 0 }
+  = let raw = clamp_non_neg (dk.effective + effective_delta) in
+    assert { raw >= 0 };
+    let new_effective = if raw > dk.public then dk.public else raw in
+    assert { new_effective <= dk.public };
+    assert { dk.effective <= dk.public };
+    assert { dk.public >= 0 };
+    assert { new_effective >= 0 /\ new_effective <= dk.public };
+    { public = dk.public; effective = new_effective }
+
+end

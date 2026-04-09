@@ -1,0 +1,26 @@
+; Why3 formal verification rules.
+; Run: dune build @verify
+
+(rule
+ (alias verify)
+ (deps dual_karma.mlw)
+ (action
+  (progn
+   (echo "Verifying DualKarma invariants...\n")
+   (run why3 prove -P alt-ergo -a split_vc dual_karma.mlw))))
+
+(rule
+ (alias verify)
+ (deps fraud_score.mlw)
+ (action
+  (progn
+   (echo "Verifying FraudScore + TaintFactor invariants...\n")
+   (run why3 prove -P alt-ergo -a split_vc fraud_score.mlw))))
+
+(rule
+ (alias verify)
+ (deps sliding_window.mlw)
+ (action
+  (progn
+   (echo "Verifying SlidingWindow invariants...\n")
+   (run why3 prove -P alt-ergo -a split_vc sliding_window.mlw))))

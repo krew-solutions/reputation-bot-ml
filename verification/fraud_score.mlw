@@ -1,0 +1,74 @@
+(** Formal verification of FraudScore and TaintFactor invariants. *)
+
+module FraudScore
+
+  use int.Int
+
+  type fraud_score = {
+    value : int;
+  }
+  invariant { 0 <= value <= 100 }
+  by { value = 0 }
+
+  function to_int (s: fraud_score) : int = s.value
+
+  let of_int_clamped (n: int) : fraud_score
+    ensures { 0 <= to_int result <= 100 }
+  = let v = if n < 0 then 0 else if n > 100 then 100 else n in
+    { value = v }
+
+  let zero () : fraud_score
+    ensures { to_int result = 0 }
+  = { value = 0 }
+
+  type classification = Clean | Suspicious | LikelyFraud | ConfirmedFraud
+
+  let classify (s: fraud_score) : classification
+    ensures { match result with
+      | Clean -> to_int s < 20
+      | Suspicious -> 20 <= to_int s < 50
+      | LikelyFraud -> 50 <= to_int s < 80
+      | ConfirmedFraud -> 80 <= to_int s
+    end }
+  = let v = s.value in
+    if v < 20 then Clean
+    else if v < 50 then Suspicious
+    else if v < 80 then LikelyFraud
+    else ConfirmedFraud
+
+end
+
+module TaintFactor
+
+  use int.Int
+  use int.ComputerDivision
+  use FraudScore
+
+  type taint_factor = {
+    scaled : int;  (** 0..10000, representing 0.0..1.0 *)
+  }
+  invariant { 0 <= scaled <= 10000 }
+  by { scaled = 10000 }
+
+  function to_scaled (t: taint_factor) : int = t.scaled
+
+  let function of_fraud_score (score: fraud_score) : taint_factor
+    ensures { 0 <= to_scaled result <= 10000 }
+    ensures { to_int score < 20 -> to_scaled result = 10000 }
+    ensures { to_int score >= 80 -> to_scaled result = 0 }
+  = match classify score with
+    | Clean -> { scaled = 10000 }
+    | Suspicious -> { scaled = 7000 }
+    | LikelyFraud -> { scaled = 3000 }
+    | ConfirmedFraud -> { scaled = 0 }
+    end
+
+  (** Key property: taint factor 0 gives zero result *)
+  let lemma_confirmed_fraud_zeroes (v: int) (score: fraud_score)
+    requires { v >= 0 }
+    requires { to_int score >= 80 }
+    ensures { let tf = of_fraud_score score in
+              v * to_scaled tf = 0 }
+  = ()
+
+end
