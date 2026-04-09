@@ -1,0 +1,15 @@
+(library
+ (name telegram_adapter)
+ (public_name reputation_bot.telegram_adapter)
+ (libraries
+  reputation_domain
+  reputation_app
+  ascetic_ddd
+  cohttp-eio
+  eio
+  yojson
+  ptime
+  fmt
+  logs)
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.eq)))

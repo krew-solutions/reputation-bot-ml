@@ -1,0 +1,6 @@
+(tests
+ (names test_dual_karma test_fraud_score test_member test_message
+   test_sliding_window_budget test_voting_power test_trigger_config)
+ (libraries reputation_domain ascetic_ddd alcotest)
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.eq ppx_deriving.ord)))

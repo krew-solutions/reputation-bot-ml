@@ -1,0 +1,8 @@
+(include_subdirs unqualified)
+
+(library
+ (name reputation_app)
+ (public_name reputation_bot.reputation_app)
+ (libraries reputation_domain ascetic_ddd)
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.eq ppx_deriving.ord)))

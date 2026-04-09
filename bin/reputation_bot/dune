@@ -1,0 +1,22 @@
+(executable
+ (name main)
+ (public_name reputation_bot)
+ (libraries
+  reputation_domain
+  reputation_app
+  reputation_infra
+  ascetic_ddd
+  ascetic_encryption
+  telegram_adapter
+  caqti
+  caqti-eio
+  caqti-eio.unix
+  caqti-driver-postgresql
+  cohttp-eio
+  eio
+  eio_main
+  mirage-crypto-rng-eio
+  ptime
+  fmt
+  logs
+  logs.fmt))

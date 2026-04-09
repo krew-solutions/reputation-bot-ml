@@ -1,0 +1,22 @@
+(include_subdirs unqualified)
+
+(library
+ (name reputation_infra)
+ (public_name reputation_bot.reputation_infra)
+ (libraries
+  reputation_domain
+  reputation_app
+  ascetic_ddd
+  ascetic_encryption
+  digestif
+  caqti
+  caqti-eio
+  caqti-driver-postgresql
+  yojson
+  mirage-crypto
+  mirage-crypto-rng
+  ptime
+  fmt
+  logs)
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.eq ppx_deriving.ord)))
