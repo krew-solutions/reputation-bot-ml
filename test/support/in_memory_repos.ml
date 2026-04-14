@@ -154,21 +154,6 @@ end = struct
   let find_by_id () id =
     Ok (Hashtbl.find_opt chats (Ids.Chat_id.to_int64 id))
 
-  let find_by_external_id () ext_id =
-    let found =
-      Hashtbl.fold
-        (fun _ chat acc ->
-          match acc with
-          | Some _ -> acc
-          | None ->
-              if External_ids.External_chat_id.equal
-                   (Chat.external_chat_id chat) ext_id
-              then Some chat
-              else None)
-        chats None
-    in
-    Ok found
-
   let save () chat ~expected_version =
     let id = Ids.Chat_id.to_int64 (Chat.id chat) in
     let current_version =
@@ -223,11 +208,15 @@ end = struct
   let member_mappings :
     (string, Ids.Member_id.t) Hashtbl.t = Hashtbl.create 16
 
+  let chat_mappings :
+    (string, Ids.Chat_id.t) Hashtbl.t = Hashtbl.create 16
+
   let message_mappings :
     (string, Ids.Message_id.t) Hashtbl.t = Hashtbl.create 16
 
   let clear () =
     Hashtbl.clear member_mappings;
+    Hashtbl.clear chat_mappings;
     Hashtbl.clear message_mappings
 
   let member_key ext_id community_id =
@@ -239,6 +228,14 @@ end = struct
   let find_member_id () ext_id community_id =
     Ok (Hashtbl.find_opt member_mappings (member_key ext_id community_id))
 
+  let chat_key ext_id =
+    Printf.sprintf "%s:%s"
+      (External_ids.External_chat_id.platform ext_id)
+      (External_ids.External_chat_id.value ext_id)
+
+  let find_chat_id () ext_id =
+    Ok (Hashtbl.find_opt chat_mappings (chat_key ext_id))
+
   let find_message_id () ext_id =
     let key =
       Printf.sprintf "%s:%s"
@@ -249,6 +246,10 @@ end = struct
 
   let save_member_mapping () ext_id member_id community_id =
     Hashtbl.replace member_mappings (member_key ext_id community_id) member_id;
+    Ok ()
+
+  let save_chat_mapping () ext_id chat_id =
+    Hashtbl.replace chat_mappings (chat_key ext_id) chat_id;
     Ok ()
 
   let save_message_mapping () ext_id message_id =

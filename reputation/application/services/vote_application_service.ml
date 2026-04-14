@@ -21,16 +21,24 @@ let handle_vote (type uow) (deps : uow Deps.t) (uow : uow)
     (req : vote_request) =
   let (module ChatRepo) = deps.chat_repo in
   let (module IdMapping) = deps.id_mapping in
-  (* Resolve chat -> community *)
+  (* Resolve external chat ID -> internal chat ID via mapping *)
+  let* chat_id_opt =
+    IdMapping.find_chat_id uow req.external_chat_id
+    |> map_error (fun e -> Domain_error.Invalid_argument e)
+  in
+  let* chat_id =
+    of_option
+      ~error:(Domain_error.Chat_not_found { chat_id = Ids.Chat_id.of_int 0 })
+      chat_id_opt
+  in
+  (* Load chat to get community_id *)
   let* chat_opt =
-    ChatRepo.find_by_external_id uow req.external_chat_id
+    ChatRepo.find_by_id uow chat_id
     |> map_error (fun e -> Domain_error.Invalid_argument e)
   in
   let* chat =
     of_option
-      ~error:
-        (Domain_error.Chat_not_found
-           { chat_id = Ids.Chat_id.of_int 0 })
+      ~error:(Domain_error.Chat_not_found { chat_id })
       chat_opt
   in
   let community_id = Chat.community_id chat in

@@ -15,15 +15,11 @@ CREATE TABLE communities (
 CREATE TABLE chats (
     id BIGSERIAL PRIMARY KEY,
     community_id BIGINT NOT NULL REFERENCES communities(id),
-    platform TEXT NOT NULL,
-    external_chat_id TEXT NOT NULL,
     version INTEGER NOT NULL DEFAULT 1,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE (platform, external_chat_id)
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_chats_community ON chats(community_id);
-CREATE INDEX idx_chats_external ON chats(platform, external_chat_id);
 
 CREATE TABLE members (
     id BIGSERIAL PRIMARY KEY,
@@ -82,6 +78,13 @@ CREATE TABLE external_member_mappings (
     community_id BIGINT NOT NULL REFERENCES communities(id),
     member_id BIGINT NOT NULL REFERENCES members(id),
     PRIMARY KEY (platform, external_user_id, community_id)
+);
+
+CREATE TABLE external_chat_mappings (
+    platform TEXT NOT NULL,
+    external_chat_id TEXT NOT NULL,
+    chat_id BIGINT NOT NULL REFERENCES chats(id),
+    PRIMARY KEY (platform, external_chat_id)
 );
 
 CREATE TABLE external_message_mappings (

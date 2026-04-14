@@ -39,7 +39,6 @@ let make_pg_deps () : pg_uow Reputation_app.Deps.t =
   let module ChatRepo : Chat_repository.S with type uow = pg_uow = struct
     type uow = pg_uow
     let find_by_id _ _ = Ok None
-    let find_by_external_id _ _ = Ok None
     let save _ _ ~expected_version:_ = Ok ()
     let next_id (module C : Caqti_eio.CONNECTION) =
       let open Caqti_request.Infix in

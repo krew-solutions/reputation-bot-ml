@@ -6,11 +6,6 @@ module type S = sig
   val find_by_id :
     uow -> Ids.Chat_id.t -> (Chat.t option, string) result
 
-  val find_by_external_id :
-    uow ->
-    External_ids.External_chat_id.t ->
-    (Chat.t option, string) result
-
   val save :
     uow ->
     Chat.t ->

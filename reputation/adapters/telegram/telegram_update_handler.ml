@@ -36,16 +36,26 @@ let handle_vote_trigger (type uow) (deps : uow Reputation_app.Deps.t)
       let ext_voter = ext_user_id voter_user_id in
       let ext_author = ext_user_id author_user_id in
       let ext_msg = ext_message_id message_id chat_id in
-      (* Resolve chat -> community *)
+      (* Resolve external chat ID -> internal via mapping *)
+      let (module IdMapping) = deps.id_mapping in
       let (module ChatRepo) = deps.chat_repo in
       let open Ascetic_ddd.Result_ext in
+      let* chat_id_opt =
+        IdMapping.find_chat_id uow ext_chat
+        |> map_error (fun e -> Domain_error.Invalid_argument e)
+      in
+      let* int_chat_id =
+        of_option
+          ~error:(Domain_error.Chat_not_found { chat_id = Ids.Chat_id.of_int 0 })
+          chat_id_opt
+      in
       let* chat_opt =
-        ChatRepo.find_by_external_id uow ext_chat
+        ChatRepo.find_by_id uow int_chat_id
         |> map_error (fun e -> Domain_error.Invalid_argument e)
       in
       let* chat =
         of_option
-          ~error:(Domain_error.Chat_not_found { chat_id = Ids.Chat_id.of_int 0 })
+          ~error:(Domain_error.Chat_not_found { chat_id = int_chat_id })
           chat_opt
       in
       let community_id = Chat.community_id chat in
