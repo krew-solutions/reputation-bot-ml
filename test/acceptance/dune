@@ -1,6 +1,8 @@
 (tests
  (names acceptance_tests feature_tests)
- (libraries reputation_domain reputation_app ascetic_ddd ascetic_gherkin
+ (libraries reputation_domain reputation_app ascetic_ddd ascetic_ddd.gherkin
    test_support alcotest re)
+ (deps
+  (source_tree ../features))
  (preprocess
   (pps ppx_deriving.show ppx_deriving.eq ppx_deriving.ord)))

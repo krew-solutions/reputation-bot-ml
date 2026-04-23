@@ -1,6 +1,0 @@
-(library
- (name ascetic_encryption)
- (public_name reputation_bot.ascetic_encryption)
- (libraries mirage-crypto mirage-crypto-rng)
- (preprocess
-  (pps ppx_deriving.show ppx_deriving.eq)))

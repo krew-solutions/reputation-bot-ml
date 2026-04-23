@@ -6,7 +6,7 @@
   reputation_app
   reputation_infra
   ascetic_ddd
-  ascetic_encryption
+  ascetic_ddd.encryption
   telegram_adapter
   caqti
   caqti-eio

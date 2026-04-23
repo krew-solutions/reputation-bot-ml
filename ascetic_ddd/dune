@@ -1,6 +1,0 @@
-(library
- (name ascetic_ddd)
- (public_name reputation_bot.ascetic_ddd)
- (libraries ptime uuidm fmt unix)
- (preprocess
-  (pps ppx_deriving.show ppx_deriving.eq ppx_deriving.ord)))

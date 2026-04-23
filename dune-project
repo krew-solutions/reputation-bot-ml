@@ -21,6 +21,7 @@
    (>= 5.4.0))
   (dune
    (>= 3.16))
+  ascetic_ddd
   (eio
    (>= 1.2))
   eio_main
@@ -41,9 +42,6 @@
     (>= 0.21)
     :with-test))
   ppx_deriving
-  menhir
   yojson
   mirage-crypto
   mirage-crypto-rng-eio))
-
-(using menhir 3.0)

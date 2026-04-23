@@ -105,14 +105,7 @@ let () =
 
 (* === Run .feature files via Alcotest === *)
 
-let feature_dir =
-  (* Find features relative to the test binary *)
-  let candidates = [
-    "test/features";
-    "../test/features";
-    "../../test/features";
-  ] in
-  List.find Sys.file_exists candidates
+let feature_dir = "../features"
 
 let load_feature name =
   Runner.to_alcotest_from_file steps
