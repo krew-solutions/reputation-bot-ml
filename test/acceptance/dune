@@ -1,7 +1,7 @@
 (tests
  (names acceptance_tests feature_tests)
  (libraries reputation_domain reputation_app ascetic_ddd ascetic_ddd.gherkin
-   test_support alcotest re)
+   ascetic_ddd.gherkin_edsl test_support alcotest re)
  (deps
   (source_tree ../features))
  (preprocess

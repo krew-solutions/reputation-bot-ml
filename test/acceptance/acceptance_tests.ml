@@ -6,6 +6,8 @@
 open Reputation_domain
 open Test_harness
 
+module Gherkin = Ascetic_gherkin_edsl
+
 (* ================================================================
    Feature: Vote Casting
    ================================================================ *)
