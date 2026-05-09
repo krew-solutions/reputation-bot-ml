@@ -1,7 +1,7 @@
 (** Reputation Infrastructure — PostgreSQL persistence, encryption, adapters. *)
 
 (* Persistence *)
-module Caqti_unit_of_work = Caqti_unit_of_work
+module Caqti_unit_of_work = Ascetic_unit_of_work.Caqti_unit_of_work
 module Event_store_pg = Event_store_pg
 module Message_repository_pg = Message_repository_pg
 module Community_repository_pg = Community_repository_pg

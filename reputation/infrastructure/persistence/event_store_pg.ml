@@ -62,8 +62,8 @@ let deserialize_event (event_type : string) (_payload : string) : Member.event o
   match event_type with
   | _ -> None  (* Full deserialization deferred to integration phase *)
 
-module Make () : Event_store.S with type uow = Caqti_unit_of_work.t = struct
-  type uow = Caqti_unit_of_work.t
+module Make () : Event_store.S with type uow = Ascetic_unit_of_work.Caqti_unit_of_work.t = struct
+  type uow = Ascetic_unit_of_work.Caqti_unit_of_work.t
 
   let append (module C : Caqti_eio.CONNECTION) ~aggregate_id ~expected_version events =
     match C.find_opt Q.get_version aggregate_id with

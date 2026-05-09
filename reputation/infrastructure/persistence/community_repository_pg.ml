@@ -22,8 +22,8 @@ module Q = struct
     unit ->! int64 @@ "SELECT nextval('communities_id_seq')"
 end
 
-module Make () : Community_repository.S with type uow = Caqti_unit_of_work.t = struct
-  type uow = Caqti_unit_of_work.t
+module Make () : Community_repository.S with type uow = Ascetic_unit_of_work.Caqti_unit_of_work.t = struct
+  type uow = Ascetic_unit_of_work.Caqti_unit_of_work.t
 
   let find_by_id (module C : Caqti_eio.CONNECTION) id =
     match C.find_opt Q.find_by_id (Ids.Community_id.to_int64 id) with

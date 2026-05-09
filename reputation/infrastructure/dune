@@ -8,6 +8,7 @@
   reputation_app
   ascetic_ddd
   ascetic_ddd.encryption
+  ascetic_ddd.unit_of_work
   digestif
   caqti
   caqti-eio

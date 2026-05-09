@@ -23,8 +23,8 @@ let parse_member_ids (s : string) : Ids.Member_id.t list =
          try Some (Ids.Member_id.of_int64 (Int64.of_string (String.trim part)))
          with _ -> None)
 
-module Make () : Fraud_detection_port.S with type uow = Caqti_unit_of_work.t = struct
-  type uow = Caqti_unit_of_work.t
+module Make () : Fraud_detection_port.S with type uow = Ascetic_unit_of_work.Caqti_unit_of_work.t = struct
+  type uow = Ascetic_unit_of_work.Caqti_unit_of_work.t
 
   let calculate_fraud_factors (module C : Caqti_eio.CONNECTION) member_id community_id =
     match C.find_opt Q.calculate_fraud_score

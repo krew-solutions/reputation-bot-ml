@@ -34,8 +34,8 @@ module Q = struct
       VALUES (?, ?, ?) ON CONFLICT DO NOTHING|}
 end
 
-module Make () : External_id_mapping.S with type uow = Caqti_unit_of_work.t = struct
-  type uow = Caqti_unit_of_work.t
+module Make () : External_id_mapping.S with type uow = Ascetic_unit_of_work.Caqti_unit_of_work.t = struct
+  type uow = Ascetic_unit_of_work.Caqti_unit_of_work.t
 
   let find_member_id (module C : Caqti_eio.CONNECTION) ext_id community_id =
     match C.find_opt Q.find_member
